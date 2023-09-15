@@ -9,10 +9,11 @@ const Preview = () => {
       <div
         className="rounded p-1 m-5"
         style={{
-          width: "22%",
-          height: "280px",
+          width: "300px",
+          height: "300px",
           backgroundImage: `url(${inputs.path}`,
           backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       ></div>
     )
@@ -23,12 +24,12 @@ function UploadForm({ isVisible }) {
   const { currentUser } = useSelector(authState);
   const { inputs, loading } = useSelector(uploadState);
   const [uploadFileDemo, setUploadFileDemo] = React.useState(null);
-  const [isImage, setIsImage] = React.useState(false);
+  const [isImage, setIsImage] = React.useState(true);
 
   const handleOnChange = (e) => {
     if (e.target.name === "file") {
       const file = e.target.files[0];
-      if (file.type.includes("image/")) {
+      if (file && file.type?.includes("image/")) {
         setIsImage(true);
         const path = URL.createObjectURL(file);
         setUploadFileDemo(file);
@@ -41,7 +42,6 @@ function UploadForm({ isVisible }) {
         );
       } else {
         setIsImage(false);
-        alert("please select valid image file (png, jpeg, jpg)");
       }
     } else {
       const title = e.target.value;
@@ -51,13 +51,17 @@ function UploadForm({ isVisible }) {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    if (!!currentUser) {
-      const userName = currentUser?.displayName.split(" ").join("");
-      const payload = { inputs, userName, uploadFileDemo };
+    if (isImage) {
+      if (!!currentUser) {
+        const userName = currentUser?.displayName.split(" ").join("");
+        const payload = { inputs, userName, uploadFileDemo };
 
-      dispatch(handleUploadMedia(payload));
+        dispatch(handleUploadMedia(payload));
+      } else {
+        alert("please login !");
+      }
     } else {
-      alert("please login !");
+      alert("please choose valid image");
     }
   };
   const isDisabled = useMemo(() => {
@@ -69,7 +73,7 @@ function UploadForm({ isVisible }) {
     isVisible && (
       <div className="d-flex flex-column">
         <p className="display-6 text-center mb-3">Upload Stock Image</p>
-        <div className="mb-5 d-flex align-items-center justify-content-center">
+        <div className="mb-5 d-flex flex-column flex-md-row align-items-center justify-content-center">
           <Preview />
           <form
             className=""
@@ -98,6 +102,13 @@ function UploadForm({ isVisible }) {
             {!currentUser && (
               <p style={{ color: "red" }}>⚠️ Please login to upload image!</p>
             )}
+            {!isImage ? (
+              <p style={{ color: "red" }}>
+                ⚠️ Please select valid image file (png, jpeg, jpg)
+              </p>
+            ) : (
+              ""
+            )}
             {loading ? (
               <button
                 className="btn btn-success float-end "
@@ -114,7 +125,7 @@ function UploadForm({ isVisible }) {
               <button
                 type="submit"
                 className="btn btn-success float-end"
-                disabled={isDisabled && !isImage}
+                disabled={isDisabled || !isImage}
               >
                 Upload
               </button>

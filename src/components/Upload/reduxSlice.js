@@ -42,7 +42,6 @@ export const handleUploadMedia = createAsyncThunk(
       );
       dispatch(fetchData());
       dispatch(setCollaped({ bool: true }));
-      dispatch(setItem());
     } catch (e) {
       console.log(e);
     }

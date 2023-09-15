@@ -2,7 +2,7 @@ import React from "react";
 import Navbar, { SearchForm } from "./Navbar/Navbar";
 import UploadForm from "./Upload/UploadForm";
 import { useDispatch, useSelector } from "react-redux";
-import { setCollaped, uploadState } from "./Upload/reduxSlice";
+import { setCollaped, setInputs, uploadState } from "./Upload/reduxSlice";
 
 function Layout({ children }) {
   const { isCollapsed } = useSelector(uploadState);
@@ -20,7 +20,16 @@ function Layout({ children }) {
             className={`btn ${
               isCollapsed ? "btn-success " : "btn-warning"
             } ms-md-auto`}
-            onClick={() => toggle(!isCollapsed)}
+            onClick={() => {
+              toggle(!isCollapsed);
+              dispatch(
+                setInputs({
+                  title: null,
+                  file: null,
+                  path: null,
+                })
+              );
+            }}
           >
             {isCollapsed ? "+ Add" : "Close"}
           </button>
