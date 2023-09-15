@@ -23,19 +23,26 @@ function UploadForm({ isVisible }) {
   const { currentUser } = useSelector(authState);
   const { inputs, loading } = useSelector(uploadState);
   const [uploadFileDemo, setUploadFileDemo] = React.useState(null);
+  const [isImage, setIsImage] = React.useState(false);
 
   const handleOnChange = (e) => {
     if (e.target.name === "file") {
       const file = e.target.files[0];
-      const path = URL.createObjectURL(file);
-      setUploadFileDemo(file);
-      dispatch(
-        setInputs({
-          ...inputs,
-          file: file.name,
-          path: path,
-        })
-      );
+      if (file.type.includes("image/")) {
+        setIsImage(true);
+        const path = URL.createObjectURL(file);
+        setUploadFileDemo(file);
+        dispatch(
+          setInputs({
+            ...inputs,
+            file: file.name,
+            path: path,
+          })
+        );
+      } else {
+        setIsImage(false);
+        alert("please select valid image file (png, jpeg, jpg)");
+      }
     } else {
       const title = e.target.value;
       dispatch(setInputs({ ...inputs, title: title }));
@@ -81,7 +88,7 @@ function UploadForm({ isVisible }) {
             </div>
             <div className="mb-3">
               <input
-                accept="image/*"
+                accept="image/png, image/jpeg ,image/jpg"
                 type="file"
                 className="form-control"
                 name="file"
@@ -107,7 +114,7 @@ function UploadForm({ isVisible }) {
               <button
                 type="submit"
                 className="btn btn-success float-end"
-                disabled={isDisabled}
+                disabled={isDisabled && !isImage}
               >
                 Upload
               </button>
