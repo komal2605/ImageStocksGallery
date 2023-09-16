@@ -9,7 +9,6 @@ const Image = () => {
   const { items } = useSelector(uploadState);
   const { state } = useLocation();
   const item = items.find((item) => item.id === state.id);
-  //   debugger;
 
   return (
     <div>
@@ -21,7 +20,7 @@ const Image = () => {
       >
         ⬅️ back
       </button>
-      <div className="d-flex justify-content-center mb-5">
+      <div className="gallery mb-5 single-imageView">
         <Card {...item} />
       </div>
     </div>

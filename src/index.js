@@ -5,7 +5,10 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import en from "javascript-time-ago/locale/en.json";
+import TimeAgo from "javascript-time-ago";
 import { BrowserRouter } from "react-router-dom";
+TimeAgo.addDefaultLocale(en);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

@@ -4,6 +4,7 @@ import FirebaseAuth from "../../handlers/auth";
 import React, { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { setItems, uploadState } from "../Upload/reduxSlice";
+import GoogleIcon from "./GoogleIcon";
 
 const AuthContainer = () => {
   const dispatch = useDispatch();
@@ -14,8 +15,12 @@ const AuthContainer = () => {
   return (
     <div className="d-flex justify-content-center">
       {!currentUser ? (
-        <button type="button" className="btn btn-warning" onClick={login}>
-          Login
+        <button
+          type="button"
+          className="btn text-nowrap btn-outline-primary"
+          onClick={login}
+        >
+          <GoogleIcon /> Login with Google
         </button>
       ) : (
         <button type="button" className="btn btn-danger" onClick={logout}>
@@ -110,7 +115,7 @@ const Dropdown = () => {
         className="avatar"
       />
     ) : (
-      "👤 Login"
+      " Login"
     );
   }, [currentUser]);
   return (

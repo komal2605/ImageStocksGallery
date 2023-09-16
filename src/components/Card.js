@@ -1,44 +1,75 @@
+import { Timestamp } from "firebase/firestore";
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactTimeAgo from "react-time-ago";
+
+const Skeleton = ({ isLoaded }) => {
+  return (
+    <div
+      className="skeleton"
+      style={{ display: isLoaded ? "none" : "block" }}
+    ></div>
+  );
+};
 
 function Card({ path, title, date, userName, id }) {
   const navigate = useNavigate();
-  const createdDate = useMemo(() => {
+  const [isLoaded, setIsLoaded] = React.useState(false);
+
+  const DateString = useMemo(() => {
     const dates = date?.split(" ");
     return dates && `${dates[2]} ${dates[1]},  ${dates[3]}`;
-    //eslint-disable-next-line
-  }, []);
+  }, [date]);
+
+  const createdDate = useMemo(() => {
+    const dateStringFromFirestore = date;
+    const dateObject = new Date(dateStringFromFirestore);
+    const timestamp = Timestamp.fromDate(dateObject);
+    return timestamp.toMillis();
+  }, [date]);
+
   const handleClick = () => {
     navigate(`/image/${id}`, { state: { id } });
   };
+  const handleLoading = () => {
+    setIsLoaded(true);
+  };
 
   return (
-    <div className="mb-5" onClick={handleClick}>
-      <div className="card overflow-hidden" style={{ width: "19rem" }}>
-        <div
-          style={{
-            height: "280px",
-            backgroundImage: `url(${path})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-          }}
-        ></div>
+    <>
+      <div className="image-wrapper " onClick={handleClick}>
+        <img
+          style={{ display: isLoaded ? "block" : "none" }}
+          className="image"
+          src={path}
+          alt={title}
+          onLoad={handleLoading}
+        />
 
-        <div className="d-flex justify-content-between align-items-center  p-2 ">
+        <Skeleton isLoaded={isLoaded} />
+
+        <div className="overlay d-flex"></div>
+        <div className="position-absolute bottom-0 mt-auto w-100 d-flex align-items-baseline mx-2">
+          <h2 className=" text-white text-start mb-3">{title}</h2>
+        </div>
+        <div className="user-info d-flex justify-content-between align-items-center  p-2 ">
           <span className="fw-normal">
-            <span className="border border-light-subtle rounded-circle me-1 bg-white">
+            <span className="border border-light-subtle rounded-circle me-1 bg-white ">
               👤
-            </span>
+            </span>{" "}
             {userName}
           </span>
-          <span className="fs-6 fw-light">{createdDate}</span>
+          <span className="d-flex flex-column align-items-end">
+            {createdDate ? (
+              <ReactTimeAgo date={createdDate} locale="en-US" />
+            ) : (
+              ""
+            )}
+            <span style={{ fontSize: "10px" }}>{DateString}</span>
+          </span>
         </div>
-        <h5 className="text-center p-2 fw-semibold text-capitalize bg-light mb-0">
-          {title}
-        </h5>
       </div>
-    </div>
+    </>
   );
 }
 
